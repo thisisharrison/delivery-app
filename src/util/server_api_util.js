@@ -2,6 +2,14 @@ import apiUrl from "../apiConfig";
 import axios from "axios";
 import axiosRetry from "axios-retry";
 
+const client = axios.create({ baseURL: apiUrl });
+client.interceptors.response.use((res, err) => {
+  if (res.data.status === "in progress") {
+    client.get(res.config.url);
+  }
+  return res;
+});
+
 // POST /route
 export const postRoute = (data) => {
   return axios.post(apiUrl + "/route", data);
@@ -9,7 +17,7 @@ export const postRoute = (data) => {
 
 // GET /route/:token
 export const getRoute = (token) => {
-  return axios.get(apiUrl + `/route/${token}`);
+  return client.get(apiUrl + `/route/${token}`);
 };
 
 // For testing
@@ -53,5 +61,24 @@ export const testFailure = () => {
  * {
  *   "status": "failure",
  *   "error": "Location not accessible by car"
+ * }
+ */
+
+// GET /mock/route/success
+export const testSuccessPath = () => {
+  return axios.get(apiUrl + "/mock/route/success");
+};
+/**
+ * @returns
+ * HTTP/1.1 200 OK
+ * {
+ *  "status": "success",
+ *  "path": [
+ *    ["22.372081", "114.107877"],
+ *    ["22.326442", "114.167811"],
+ *    ["22.284419", "114.159510"]
+ *  ],
+ *  "total_distance": 20000,
+ *  "total_time": 1800
  * }
  */
