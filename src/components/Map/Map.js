@@ -45,6 +45,7 @@ const Map = (props) => {
 
   useEffect(() => {
     if (!map) return;
+    // if (!path.totalDistance) return;
     const directionsService = new window.google.maps.DirectionsService();
     const directionsRenderer = new window.google.maps.DirectionsRenderer();
     directionsRenderer.setMap(map);
@@ -82,11 +83,7 @@ const Map = (props) => {
     );
   };
 
-  return (
-    <div id="map" ref={mapRef}>
-      {JSON.stringify(path, undefined)}
-    </div>
-  );
+  return <div id="map" ref={mapRef}></div>;
 };
 
 Map.propTypes = {};

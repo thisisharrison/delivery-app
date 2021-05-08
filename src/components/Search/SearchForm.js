@@ -47,6 +47,7 @@ function SearchForm(props) {
   const clearForm = (e) => {
     setData({ origin: "", destination: "" });
     setMessage({ status: "", message: "" });
+    setPath({});
   };
 
   return (
