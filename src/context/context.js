@@ -1,7 +1,7 @@
 import React from "react";
 
 const PathContext = React.createContext({
-  path: { path: [], totalDistance: null, totalTime: null },
+  path: null,
   setPath: () => {},
 });
 

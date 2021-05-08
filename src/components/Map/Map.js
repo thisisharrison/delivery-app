@@ -7,7 +7,8 @@ import "./map.scss";
 
 const Map = (props) => {
   const [map, setMap] = useState(null);
-  const [service, setService] = useState(null);
+  const [directionsRenderer, setDirectionsRenderer] = useState(null);
+  const [directionsService, setDirectionsService] = useState(null);
   const { path, setPath } = useContext(PathContext);
 
   const loader = new Loader({
@@ -29,27 +30,29 @@ const Map = (props) => {
   useEffect(() => {
     loader
       .load()
-      .then(
-        () =>
-          new Promise((resolve) =>
-            setMap(new window.google.maps.Map(mapRef.current, mapOptions))
-          )
-      )
       .then(() => {
-        setService(new window.google.maps.places.PlacesService(map));
+        setMap(new window.google.maps.Map(mapRef.current, mapOptions));
+        setDirectionsService(new window.google.maps.DirectionsService());
+        setDirectionsRenderer(new window.google.maps.DirectionsRenderer());
       })
       .catch((e) => {
         console.error(e);
       });
+    console.log("LOAD MAP");
   }, []);
 
   useEffect(() => {
-    if (!map) return;
-    // if (!path.totalDistance) return;
-    const directionsService = new window.google.maps.DirectionsService();
-    const directionsRenderer = new window.google.maps.DirectionsRenderer();
+    if (!window.google) return;
+    if (!path && directionsRenderer) {
+      directionsRenderer.setMap(null);
+      map.setCenter(mapOptions.center);
+      map.setZoom(11);
+      console.log("CLEAR PATH");
+      return;
+    }
     directionsRenderer.setMap(map);
     displayRoute(directionsService, directionsRenderer);
+    console.log("DISPLAY PATH");
   }, [path]);
 
   const displayRoute = (directionsService, directionsRenderer) => {

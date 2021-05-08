@@ -36,7 +36,7 @@ export const testServerError = () => {
  */
 
 // POST /mock/route/success
-export const testSuccess = () => {
+export const testSubmitSuccess = () => {
   return axios.post(apiUrl + "/mock/route/success");
 };
 /**
@@ -46,7 +46,7 @@ export const testSuccess = () => {
  */
 
 // GET /mock/route/inprogress
-export const testInProgress = () => {
+export const testSubmitInProgress = () => {
   return axios.get(apiUrl + "/mock/route/inprogress");
 };
 /**
@@ -56,7 +56,7 @@ export const testInProgress = () => {
  */
 
 // GET /mock/route/failure
-export const testFailure = () => {
+export const testGetRouteFailure = () => {
   return axios.get(apiUrl + "/mock/route/failure");
 };
 /**
@@ -69,7 +69,7 @@ export const testFailure = () => {
  */
 
 // GET /mock/route/success
-export const testSuccessPath = () => {
+export const testGetRouteSuccess = () => {
   return axios.get(apiUrl + "/mock/route/success");
 };
 /**

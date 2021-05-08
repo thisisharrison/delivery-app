@@ -6,15 +6,19 @@ import Message from "../Message/Message";
 import {
   postRoute,
   getRoute,
-  testInProgress,
-  testSuccessPath,
+  testServerError,
+  testSubmitSuccess,
+  testSubmitInProgress,
+  testGetRouteSuccess,
+  testGetRouteFailure,
 } from "../../util/server_api_util";
 import PathContext from "../../context/context";
 
 function SearchForm(props) {
   const [data, setData] = useState({ origin: "", destination: "" });
-  const [message, setMessage] = useState({ status: "", message: "" });
-  const { path, setPath } = useContext(PathContext);
+  const [message, setMessage] = useState(null);
+  const [resubmit, setResubmit] = useState(false);
+  const { _, setPath } = useContext(PathContext);
 
   const handleChange = (e) => {
     setData(Object.assign({}, data, { [e.target.name]: e.target.value }));
@@ -22,32 +26,36 @@ function SearchForm(props) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    postRoute(data)
+    testSubmitSuccess(data)
       .then(async (res) => {
-        const { data } = await testSuccessPath(res.data.token);
+        const { data } = await testGetRouteSuccess(res.data.token);
 
         if (data.status === "in progress") {
-          setMessage({ status: data.status, message: "" });
+          setMessage({ status: data.status });
         } else if (data.status === "failure") {
-          setMessage({ status: data.status, message: data.error });
+          setMessage(Object.assign({}, data));
+          setResubmit(false);
         } else if (data.status === "success") {
-          setPath(data);
+          setPath(Object.assign({}, data));
           setMessage({
             status: data.status,
             totalDistance: data.total_distance,
             totalTime: data.total_time,
           });
+          setResubmit(false);
         }
       })
       .catch((e) => {
-        setMessage({ status: e.status, message: e.error });
+        setMessage({ status: e.response.status, error: e.response.data });
+        setResubmit(true);
       });
   };
 
   const clearForm = (e) => {
     setData({ origin: "", destination: "" });
-    setMessage({ status: "", message: "" });
-    setPath({});
+    setMessage(null);
+    setPath(null);
+    setResubmit(false);
   };
 
   return (
@@ -81,12 +89,16 @@ function SearchForm(props) {
       </div>
 
       <div className="d-flex justify-content-start">
-        <Button variant="success" type="submit" className="me-3">
-          Submit
-        </Button>
-        <Button variant="primary" type="submit" className="me-3">
-          Re-Submit
-        </Button>
+        {!resubmit && (
+          <Button variant="success" type="submit" className="me-3">
+            Submit
+          </Button>
+        )}
+        {resubmit && (
+          <Button variant="primary" type="submit" className="me-3">
+            Re-Submit
+          </Button>
+        )}
         <Button variant="dark" className="me-3" onClick={clearForm}>
           Reset
         </Button>
