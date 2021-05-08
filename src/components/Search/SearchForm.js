@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
@@ -6,7 +6,7 @@ import Message from "../Message/Message";
 
 function SearchForm(props) {
   return (
-    <Form>
+    <Form className="mb-5">
       <Form.Group controlId="startingLocation">
         <Form.Label>Starting Location</Form.Label>
         <Form.Control
