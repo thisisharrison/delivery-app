@@ -8,6 +8,7 @@ import Col from "react-bootstrap/Col";
 import { PathProvider } from "../context/context";
 
 export default function App() {
+  // The path entire state is passed to the provider
   const [path, setPath] = useState({});
   const value = { path, setPath };
 

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import Alert from "react-bootstrap/Alert";
 
+// message component
+// receives props from search form
 function Message({ message }) {
   const [variant, setVariant] = useState("light");
   const [info, setInfo] = useState({});

@@ -1,7 +1,8 @@
 import React, { useState, useContext } from "react";
-import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
 import Message from "../Message/Message";
+// importing context for updating
+import PathContext from "../../context/context";
+// importing the api axios calls
 import {
   postRoute,
   getRoute,
@@ -11,36 +12,53 @@ import {
   testGetRouteSuccess,
   testGetRouteFailure,
 } from "../../util/server_api_util";
-import PathContext from "../../context/context";
 
+import Form from "react-bootstrap/Form";
+import Button from "react-bootstrap/Button";
+
+// search component
 function SearchForm() {
+  // setting states
   const [data, setData] = useState({ origin: "", destination: "" });
   const [message, setMessage] = useState(null);
   const [resubmit, setResubmit] = useState(false);
   const [disable, setDisable] = useState(false);
+  // receives updater function from the context
   const { _, setPath } = useContext(PathContext);
 
+  // handles form change
   const handleChange = (e) => {
     setData(Object.assign({}, data, { [e.target.name]: e.target.value }));
   };
 
+  // handle submission of the form
   const handleSubmit = (e) => {
     e.preventDefault();
     setMessage(null);
+    // axios inital call with origin and destination data
     postRoute(data)
       .then(async (res) => {
+        // subsequent call with token to retrieve path
         let { data } = await getRoute(res.data.token);
+        // retry logic while status is in progress
         while (data.status === "in progress") {
+          // update the message state
           setMessage({ status: data.status });
+          // disable submit buttons
           setDisable(true);
+          // rety API call
           let response = await getRoute(res.data.token);
+          // update data variable
           data = response.data;
         }
 
         if (data.status === "failure") {
+          // failure message handling
           setMessage(Object.assign({}, data));
         } else if (data.status === "success") {
+          // update context
           setPath(Object.assign({}, data));
+          // success message handling
           setMessage({
             status: data.status,
             totalDistance: data.total_distance,
@@ -51,15 +69,18 @@ function SearchForm() {
         setDisable(false);
       })
       .catch((e) => {
+        // error message handling
         setMessage({ status: e.response.status, error: e.response.data });
         setResubmit(true);
         setDisable(false);
       });
   };
 
+  // handle reset form
   const clearForm = (e) => {
     setData({ origin: "", destination: "" });
     setMessage(null);
+    // update context
     setPath(null);
     setResubmit(false);
     setDisable(false);

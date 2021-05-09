@@ -1,3 +1,4 @@
+// api settings imported for ease of use for development and production
 import apiUrl from "../apiConfig";
 import axios from "axios";
 

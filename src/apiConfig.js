@@ -1,4 +1,5 @@
 let apiUrl;
+// environment variables from .env
 const apiUrls = {
   production: process.env.REACT_APP_PROD_API,
   development: process.env.REACT_APP_MOCK_API,
