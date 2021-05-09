@@ -1,70 +1,118 @@
-# Getting Started with Create React App
+# Delivery App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Demo
+[![](http://img.youtube.com/vi/FxHRUyJWSWI/0.jpg)](http://www.youtube.com/watch?v=FxHRUyJWSWI "")
 
-## Available Scripts
+## Starting the application
 
-In the project directory, you can run:
+1. **Git clone**
 
-### `yarn start`
+    With zip file (bundle file), you can `git clone <path_to_bundle_file>`.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+    Or `git clone https://github.com/thisisharrison/delivery-app.git`
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+2. **Install dependencies**
 
-### `yarn test`
+    In main directory, install node packages with npm package manager. 
+    
+    ```bash
+    npm install
+    ```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+3. **Set enivronment variables**
 
-### `yarn build`
+    Create a `.env` file in main directory and set the following variables.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+    ```
+    REACT_APP_MAPS_API_KEY={YOUR GOOGLE MAP API KEY}
+    REACT_APP_MOCK_API={YOUR DEVELOPMENT API URL}
+    REACT_APP_PROD_API={YOUR PRODUCTION API URL}
+    ```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+4. **Development**
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+    Run the app in the development mode with below command.\
+    Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+    ```
+    yarn start
+    ```    
+5. **Tests**
 
-### `yarn eject`
+    Launch the test runner in the interactive watch mode.
+    ```
+    yarn test
+    ```
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+## Instructions on creating a production build
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app). Therefore, we can run `yarn build` with `react-scripts` to create a build directory with `build/static` containing the JavaScript code and CSS files. 
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+To change this behaviour, we can update npm `scripts` in `package.json` file. We would want to use a module bundler such as webpack and create a `webpack.prod.js` and then update `scripts` to:
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+```
+  "build": "webpack --config webpack.prod.js"
+```
 
-## Learn More
+In this `webpack.prod.js` file, we would want to set mode to `production` as webpack will minify our code. We also want to generate sourcemaps in production, `devtools: "source-map"`, this is slow but it is recommended choice for production builds. 
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+For JavaScript compiler, we also want to add Babel, which converts our modern JavaScript to run in older browsers. We want to add to our webpack configuration: loader, `"babel-loader"`, and presets, `"@babel/env", "@babel/react"`.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Features
 
-### Code Splitting
+### Search Form
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+User can pickup and drop-off points and submit. Search Form renders `Message` component based on API responses. 
 
-### Analyzing the Bundle Size
+If backend is busy, it will continue to retry the API call. We can accomplish this using `async/await`. 
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+```js
+postRoute(data)
+  // asynchronous callback
+  .then(async (res) => {
+    // if postRoute Promise resolved, 
+    // make an API call with the token and destructure the response
+    let { data } = await getRoute(res.data.token);
+    // retry logic while status is in progress
+    while (data.status === "in progress") {
+      // ...
+      let response = await getRoute(res.data.token);
+      // update data variable
+      data = response.data;
+    }
+    // ...
+  })
+  .catch((e) => {
+    // ...
+  })
+```
 
-### Making a Progressive Web App
+### Map
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+Application has a global state using Context Provider. Upon successful API calls, Search Form component will call `setPath` with the response data.
 
-### Advanced Configuration
+```js
+const [path, setPath] = React.useState(null);
+return (
+  <PathContext.Provider value={{ path, setPath }}>
+    {children}
+  </PathContext.Provider>
+);
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+In the Map element, we receive path from Context and call `displayRoute` with Google's `DirectionsService` and `DirectionsRenderer`. We map over array from API response and create `waypoints` in Google's LatLng geographical coordinates. We call `DirectionsService.route()` and passing it literal containing input terms, including travel mode of Driving, and successful callback to render the directions. 
 
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `yarn build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+```js
+directionsService.route(
+  {
+    origin: waypts[0].location,
+    destination: waypts[pts - 1].location,
+    waypoints: waypts.slice(1, pts - 1),
+    optimizeWaypoints: true,
+    travelMode: "DRIVING",
+  },
+  (response, status) => {
+    if (status === "OK" && response) {
+      directionsRenderer.setDirections(response);
+    } 
+  // ...
+```

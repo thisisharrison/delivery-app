@@ -7,7 +7,7 @@ const ProviderWrapper = ({ children }) => {
   return <PathProvider>{children}</PathProvider>;
 };
 
-const customRender = (ui, options) =>
+export const customRender = (ui, options) =>
   render(ui, { wrapper: ProviderWrapper, ...options });
 
 describe("Search component", () => {
