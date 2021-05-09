@@ -1,7 +1,7 @@
 # Delivery App
 
 ## Demo
-[![](http://img.youtube.com/vi/FxHRUyJWSWI/0.jpg)](http://www.youtube.com/watch?v=FxHRUyJWSWI "")
+[![Demo](https://img.youtube.com/vi/FxHRUyJWSWI/0.jpg)](https://www.youtube.com/watch?v=FxHRUyJWSWI)
 
 ## Starting the application
 
