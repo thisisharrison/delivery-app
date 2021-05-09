@@ -1,19 +1,6 @@
 import apiUrl from "../apiConfig";
 import axios from "axios";
 
-const client = axios.create({ baseURL: apiUrl });
-client.interceptors.response.use(
-  (res) => {
-    if (res.data.status === "in progress") {
-      client.get(res.config.url);
-    }
-    return res;
-  },
-  (err) => {
-    return Promise.reject(err);
-  }
-);
-
 // POST /route
 export const postRoute = (data) => {
   return axios.post(apiUrl + "/route", data);
@@ -21,7 +8,7 @@ export const postRoute = (data) => {
 
 // GET /route/:token
 export const getRoute = (token) => {
-  return client.get(apiUrl + `/route/${token}`);
+  return axios.get(apiUrl + `/route/${token}`);
 };
 
 // For testing
@@ -46,7 +33,7 @@ export const testSubmitSuccess = () => {
  */
 
 // GET /mock/route/inprogress
-export const testSubmitInProgress = () => {
+export const testGetRouteInProgress = () => {
   return axios.get(apiUrl + "/mock/route/inprogress");
 };
 /**

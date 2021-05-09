@@ -1,7 +1,6 @@
 let apiUrl;
 const apiUrls = {
-  // placeholder for production URL
-  production: "#",
+  production: process.env.REACT_APP_PROD_API,
   development: process.env.REACT_APP_MOCK_API,
 };
 

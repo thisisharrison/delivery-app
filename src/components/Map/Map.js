@@ -1,11 +1,10 @@
 import React, { useEffect, useRef, useState, useContext } from "react";
 import { Loader } from "@googlemaps/js-api-loader";
-import PropTypes from "prop-types";
 import PathContext from "../../context/context";
 
 import "./map.scss";
 
-const Map = (props) => {
+const Map = () => {
   const [map, setMap] = useState(null);
   const [directionsRenderer, setDirectionsRenderer] = useState(null);
   const [directionsService, setDirectionsService] = useState(null);
@@ -86,9 +85,7 @@ const Map = (props) => {
     );
   };
 
-  return <div id="map" ref={mapRef}></div>;
+  return <div id="map" data-testid="map" ref={mapRef}></div>;
 };
-
-Map.propTypes = {};
 
 export default Map;

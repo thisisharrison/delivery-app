@@ -1,5 +1,4 @@
 import React, { useState, useContext } from "react";
-import PropTypes from "prop-types";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Message from "../Message/Message";
@@ -8,16 +7,17 @@ import {
   getRoute,
   testServerError,
   testSubmitSuccess,
-  testSubmitInProgress,
+  testGetRouteInProgress,
   testGetRouteSuccess,
   testGetRouteFailure,
 } from "../../util/server_api_util";
 import PathContext from "../../context/context";
 
-function SearchForm(props) {
+function SearchForm() {
   const [data, setData] = useState({ origin: "", destination: "" });
   const [message, setMessage] = useState(null);
   const [resubmit, setResubmit] = useState(false);
+  const [disable, setDisable] = useState(false);
   const { _, setPath } = useContext(PathContext);
 
   const handleChange = (e) => {
@@ -26,15 +26,19 @@ function SearchForm(props) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    testSubmitSuccess(data)
+    setMessage(null);
+    postRoute(data)
       .then(async (res) => {
-        const { data } = await testGetRouteSuccess(res.data.token);
-
-        if (data.status === "in progress") {
+        let { data } = await getRoute(res.data.token);
+        while (data.status === "in progress") {
           setMessage({ status: data.status });
-        } else if (data.status === "failure") {
+          setDisable(true);
+          let response = await getRoute(res.data.token);
+          data = response.data;
+        }
+
+        if (data.status === "failure") {
           setMessage(Object.assign({}, data));
-          setResubmit(false);
         } else if (data.status === "success") {
           setPath(Object.assign({}, data));
           setMessage({
@@ -42,12 +46,14 @@ function SearchForm(props) {
             totalDistance: data.total_distance,
             totalTime: data.total_time,
           });
-          setResubmit(false);
         }
+        setResubmit(false);
+        setDisable(false);
       })
       .catch((e) => {
         setMessage({ status: e.response.status, error: e.response.data });
         setResubmit(true);
+        setDisable(false);
       });
   };
 
@@ -56,6 +62,7 @@ function SearchForm(props) {
     setMessage(null);
     setPath(null);
     setResubmit(false);
+    setDisable(false);
   };
 
   return (
@@ -90,23 +97,36 @@ function SearchForm(props) {
 
       <div className="d-flex justify-content-start">
         {!resubmit && (
-          <Button variant="success" type="submit" className="me-3">
+          <Button
+            variant="success"
+            type="submit"
+            className="me-3"
+            disabled={disable}
+          >
             Submit
           </Button>
         )}
         {resubmit && (
-          <Button variant="primary" type="submit" className="me-3">
+          <Button
+            variant="primary"
+            type="submit"
+            className="me-3"
+            disabled={disable}
+          >
             Re-Submit
           </Button>
         )}
-        <Button variant="dark" className="me-3" onClick={clearForm}>
+        <Button
+          variant="dark"
+          className="me-3"
+          onClick={clearForm}
+          disabled={disable}
+        >
           Reset
         </Button>
       </div>
     </Form>
   );
 }
-
-SearchForm.propTypes = {};
 
 export default SearchForm;

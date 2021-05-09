@@ -50,6 +50,14 @@ function Message({ message }) {
   }
 }
 
-Message.propTypes = {};
+Message.propTypes = {
+  message: PropTypes.shape({
+    status: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+      .isRequired,
+    totalDistance: PropTypes.number,
+    totalTime: PropTypes.number,
+    error: PropTypes.string,
+  }),
+};
 
 export default Message;
