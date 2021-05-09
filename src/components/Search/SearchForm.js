@@ -1,7 +1,7 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import Message from "../Message/Message";
 // importing context for updating
-import PathContext from "../../context/context";
+import { usePathContext } from "../../context/context";
 // importing the api axios calls
 import {
   postRoute,
@@ -24,7 +24,7 @@ function SearchForm() {
   const [resubmit, setResubmit] = useState(false);
   const [disable, setDisable] = useState(false);
   // receives updater function from the context
-  const { _, setPath } = useContext(PathContext);
+  const { path, setPath } = usePathContext();
 
   // handles form change
   const handleChange = (e) => {
@@ -87,7 +87,7 @@ function SearchForm() {
   };
 
   return (
-    <Form className="mb-5" onSubmit={handleSubmit}>
+    <Form className="mb-5" onSubmit={handleSubmit} data-testid="search">
       <Form.Group controlId="origin">
         <Form.Label>Starting Location</Form.Label>
         <Form.Control
@@ -95,6 +95,7 @@ function SearchForm() {
           placeholder="Enter starting location"
           type="text"
           name="origin"
+          aria-label="origin"
           onChange={handleChange}
           value={data.origin}
         />
@@ -107,6 +108,7 @@ function SearchForm() {
           placeholder="Enter drop-off location"
           type="text"
           name="destination"
+          aria-label="destination"
           onChange={handleChange}
           value={data.destination}
         />

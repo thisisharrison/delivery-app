@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState, useContext } from "react";
+import React, { useEffect, useRef, useState } from "react";
 // import context to receive path
-import PathContext from "../../context/context";
+import { usePathContext } from "../../context/context";
 // https://googlemaps.github.io/js-api-loader/index.html
 import { Loader } from "@googlemaps/js-api-loader";
 
@@ -12,7 +12,7 @@ const Map = () => {
   const [directionsRenderer, setDirectionsRenderer] = useState(null);
   const [directionsService, setDirectionsService] = useState(null);
   // receive path from context
-  const { path, setPath } = useContext(PathContext);
+  const { path, setPath } = usePathContext();
 
   // loader exposes a Promise and callback interface
   // set libaries: directions to for Directions Renderer and Directions Services
@@ -47,7 +47,7 @@ const Map = () => {
         // error handling
         console.error(e);
       });
-    console.log("LOAD MAP");
+    // console.log("LOAD MAP");
   }, []);
 
   useEffect(() => {
@@ -58,14 +58,14 @@ const Map = () => {
       // reset to default mapOptions
       map.setCenter(mapOptions.center);
       map.setZoom(11);
-      console.log("CLEAR PATH");
+      // console.log("CLEAR PATH");
       return;
     }
     // update directions when context is updated
     directionsRenderer.setMap(map);
     // display route
     displayRoute(directionsService, directionsRenderer);
-    console.log("DISPLAY PATH");
+    // console.log("DISPLAY PATH");
   }, [path]);
 
   const displayRoute = (directionsService, directionsRenderer) => {
