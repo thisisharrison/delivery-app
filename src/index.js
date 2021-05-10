@@ -5,4 +5,3 @@ import "./index.scss";
 import * as API from "./util/server_api_util";
 
 ReactDOM.render(<App />, document.getElementById("root"));
-window.API = API;

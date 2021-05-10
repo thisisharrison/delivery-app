@@ -1,13 +1,18 @@
 import React from "react";
 
-// set default value for path
-// setPath updater to be passed down to context provider
-const PathContext = React.createContext({
-  path: null,
-  setPath: () => {},
-});
+const PathContext = React.createContext();
 
-export const PathProvider = PathContext.Provider;
+export const PathProvider = ({ children }) => {
+  // set default value for path
+  // setPath updater to be passed down to context provider
+  const [path, setPath] = React.useState(null);
+
+  return (
+    <PathContext.Provider value={{ path, setPath }}>
+      {children}
+    </PathContext.Provider>
+  );
+};
+
+export const usePathContext = () => React.useContext(PathContext);
 export const PathConsumer = PathContext.Consumer;
-
-export default PathContext;
