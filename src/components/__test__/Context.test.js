@@ -2,7 +2,10 @@ import React from "react";
 import { render, fireEvent } from "@testing-library/react";
 import { PathProvider, PathConsumer } from "../../context/context";
 
-describe("initial state", () => {
+describe("PathContext", () => {
+  /**
+   * Checks path state initially is null
+   */
   it("has null as default values for path", () => {
     const { getByText } = render(
       <PathProvider>
@@ -13,9 +16,10 @@ describe("initial state", () => {
     );
     expect(getByText("null")).toBeTruthy();
   });
-});
 
-describe("path change", () => {
+  /**
+   * Checks if updater function updates the path state
+   */
   it("sets path to response", () => {
     const response = {
       status: "success",

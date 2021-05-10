@@ -36,7 +36,7 @@ function Message({ message }) {
   } else {
     return (
       <div>
-        <Alert variant={variant}>
+        <Alert variant={variant} data-testid="message">
           <ul>
             {Object.keys(info).map((key) => {
               return (

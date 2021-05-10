@@ -1,14 +1,6 @@
-import { render } from "@testing-library/react";
 import fireEvent from "@testing-library/user-event";
 import SearchForm from "../Search/SearchForm";
-import { PathProvider } from "../../context/context";
-
-const ProviderWrapper = ({ children }) => {
-  return <PathProvider>{children}</PathProvider>;
-};
-
-export const customRender = (ui, options) =>
-  render(ui, { wrapper: ProviderWrapper, ...options });
+import customRender from "./utils";
 
 describe("Search component", () => {
   it("can render properly", () => {
@@ -32,8 +24,10 @@ describe("Search component", () => {
 
   it("should update when user types", () => {
     const { getByRole } = customRender(<SearchForm />);
+
     const origin = getByRole("textbox", { name: /origin/i });
     const destination = getByRole("textbox", { name: /destination/i });
+
     fireEvent.type(origin, "innocentre");
     fireEvent.type(destination, "Hong Kong International Airport Terminal 1");
 
