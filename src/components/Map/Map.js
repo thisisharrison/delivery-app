@@ -11,6 +11,8 @@ const Map = () => {
   const [map, setMap] = useState(null)
   const [directionsRenderer, setDirectionsRenderer] = useState(null)
   const [directionsService, setDirectionsService] = useState(null)
+  const [status, setStatus] = useState('idle')
+  const [error, setError] = useState(null)
   // receive path from context
   const {path, setPath} = usePathContext()
 
@@ -35,16 +37,20 @@ const Map = () => {
   const mapRef = useRef()
 
   useEffect(() => {
+    // on mount set state to loading
+    setStatus('loading')
     // use the loader function and update state's map, and directions renderer and service
     loader.load().then(
       () => {
         setMap(new window.google.maps.Map(mapRef.current, mapOptions))
         setDirectionsService(new window.google.maps.DirectionsService())
         setDirectionsRenderer(new window.google.maps.DirectionsRenderer())
+        setStatus('resolved')
       },
       error => {
         // error handling
-        throw error
+        setStatus('rejected')
+        setError(error)
       },
     )
   }, [])
@@ -63,6 +69,7 @@ const Map = () => {
     directionsRenderer.setMap(map)
     // display route
     displayRoute(directionsService, directionsRenderer)
+    setStatus('loading')
   }, [path])
 
   const displayRoute = (directionsService, directionsRenderer) => {
@@ -96,16 +103,21 @@ const Map = () => {
         // display directions
         if (status === 'OK' && response) {
           directionsRenderer.setDirections(response)
+          setStatus('resolved')
         } else {
           // error handling
           console.error(response)
-          throw response
+          setError(response)
+          setStatus('rejeced')
         }
       },
     )
   }
 
-  return <div id="map" data-testid="map" ref={mapRef}></div>
+  if (status === 'rejected') {
+    throw error
+  } else {
+    return <div id="map" data-testid="map" ref={mapRef}></div>
+  }
 }
-
 export default Map
