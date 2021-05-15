@@ -98,7 +98,8 @@ const Map = () => {
           directionsRenderer.setDirections(response)
         } else {
           // error handling
-          throw status
+          console.error(response)
+          throw response
         }
       },
     )

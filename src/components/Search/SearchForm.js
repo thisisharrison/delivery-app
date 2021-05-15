@@ -3,11 +3,7 @@ import Message from '../Message/Message'
 // importing context for updating
 import {usePathContext} from '../../context/context'
 // importing the api axios calls
-import {
-  postRoute,
-  getRoute,
-  testGetRouteSuccess,
-} from '../../util/server_api_util'
+import {postRoute, getRoute} from '../../util/server_api_util'
 
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
@@ -35,7 +31,7 @@ function SearchForm() {
     postRoute(data)
       .then(async res => {
         // subsequent call with token to retrieve path
-        let {data} = await testGetRouteSuccess(res.data.token)
+        let {data} = await getRoute(res.data.token)
         // retry logic while status is in progress
         while (data.status === 'in progress') {
           // update the message state
