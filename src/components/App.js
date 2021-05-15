@@ -1,11 +1,12 @@
-import React from "react";
-import Search from "./Search/SearchForm";
-import Map from "./Map/Map";
-import Container from "react-bootstrap/Container";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
+import React from 'react'
+import Search from './Search/SearchForm'
+import Map from './Map/Map'
+import {MapErrorBoundary, ErrorFallBackComponent} from './Map/MapErrorBoundary'
+import Container from 'react-bootstrap/Container'
+import Row from 'react-bootstrap/Row'
+import Col from 'react-bootstrap/Col'
 
-import { PathProvider } from "../context/context";
+import {PathProvider} from '../context/context'
 
 export default function App() {
   return (
@@ -17,10 +18,13 @@ export default function App() {
             <Search />
           </Col>
           <Col xs={12} md={8}>
-            <Map />
+            {/* fails with the Google Map Error */}
+            <MapErrorBoundary ErrorFallBackComponent={ErrorFallBackComponent}>
+              <Map />
+            </MapErrorBoundary>
           </Col>
         </Row>
       </Container>
     </PathProvider>
-  );
+  )
 }
